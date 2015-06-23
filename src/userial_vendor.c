@@ -285,6 +285,7 @@ int userial_vendor_open(tUSERIAL_CFG *p_cfg)
 void userial_vendor_close(void)
 {
     int result;
+    int ret;
 
     if (vnd_userial.fd == -1)
         return;
@@ -299,6 +300,9 @@ void userial_vendor_close(void)
     tcflush(vnd_userial.fd, TCIOFLUSH);
     if ((result = close(vnd_userial.fd)) < 0)
         ALOGE( "close(fd:%d) FAILED result:%d", vnd_userial.fd, result);
+
+    ret=system("/system/bin/sh /system/bin/bt_reset");
+    ALOGI("###################RESET BT GPIO=%d",ret);
 
     vnd_userial.fd = -1;
 }
