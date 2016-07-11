@@ -26,6 +26,8 @@
 
 #define LOG_TAG "bt_vendor"
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <utils/Log.h>
 #include <string.h>
 #include "bt_vendor_brcm.h"
@@ -91,6 +93,13 @@ static const tUSERIAL_CFG userial_init_cfg =
 
 static int init(const bt_vendor_callbacks_t* p_cb, unsigned char *local_bdaddr)
 {
+
+    FILE *fpipe;
+    char *bd_mac_gen_cmd="/system/bin/cat /data/misc/bluetooth/bd_mac";
+    char line[64]={0};
+	unsigned int mac_array_tmp[6] = { 0 } ;
+	int mac_num;
+
     ALOGI("init");
 
     if (p_cb == NULL)
@@ -120,8 +129,22 @@ static int init(const bt_vendor_callbacks_t* p_cb, unsigned char *local_bdaddr)
     /* store reference to user callbacks */
     bt_vendor_cbacks = (bt_vendor_callbacks_t *) p_cb;
 
-    /* This is handed over from the stack */
-    memcpy(vnd_local_bd_addr, local_bdaddr, 6);
+    if ( !(fpipe = (FILE*)popen(bd_mac_gen_cmd,"r")) ) return 0;
+    while ( fgets( line, sizeof line, fpipe))
+    {
+        ALOGI("########### bd_macaddr=%s",line);
+    }
+    pclose(fpipe);
+
+	if(sscanf(line,"%02X:%02X:%02X:%02X:%02X:%02X",&mac_array_tmp[0],&mac_array_tmp[1],&mac_array_tmp[2],&mac_array_tmp[3],&mac_array_tmp[4],&mac_array_tmp[5]))
+	{
+		for (mac_num=0; mac_num<6; mac_num++) vnd_local_bd_addr[mac_num] = mac_array_tmp[mac_num] & 0xff;
+		memcpy(vnd_local_bd_addr, local_bdaddr, 3);
+	}
+	else
+	{
+		 memcpy(vnd_local_bd_addr, local_bdaddr, 6);
+	}
 
     return 0;
 }
