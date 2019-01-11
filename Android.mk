@@ -52,6 +52,21 @@ LOCAL_PROPRIETARY_MODULE := true
 include $(LOCAL_PATH)/vnd_buildcfg.mk
 
 include $(BUILD_SHARED_LIBRARY)
+ifeq ($(TARGET_PRODUCT), edm1cf_pmic_6dq)
+	include $(LOCAL_PATH)/conf/technexion/edm1cf_pmic_6dq/Android.mk
+endif
+ifeq ($(TARGET_PRODUCT), tep1_7d)
+	include $(LOCAL_PATH)/conf/technexion/tep1_7d/Android.mk
+endif
+ifeq ($(TARGET_PRODUCT), pico_7d)
+	include $(LOCAL_PATH)/conf/technexion/pico_7d/Android.mk
+endif
+ifeq ($(TARGET_PRODUCT), pico_6dq)
+	include $(LOCAL_PATH)/conf/technexion/pico_6dq/Android.mk
+endif
+ifeq ($(TARGET_PRODUCT), wandboard)
+	include $(LOCAL_PATH)/conf/wandboard/Android.mk
+endif
 ifeq ($(TARGET_PRODUCT), sabresd_6sx)
 	include $(LOCAL_PATH)/conf/fsl/sabresd_6sx/Android.mk
 endif
